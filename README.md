@@ -1,6 +1,16 @@
 # AndroidTips
 android 日常开发总结
 
+### 工具使用
+
+1. 
+
+2. 
+
+3.
+
+
+
 ### RecyclerView中多Type性能优化原则  
 
 1. 减少`inflate`时间，因为通过xml文件inflate，必然要经过文件的打开关闭，IO操作耗时，尤其当item的复用几率很低的情况下，随着type的增多，这种inflate带来的损耗是相当大的；
