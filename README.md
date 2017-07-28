@@ -1,12 +1,18 @@
 # AndroidTips
 android 日常开发总结
 
-> RecyclerView中多Type性能优化原则  
+#### RecyclerView中多Type性能优化原则  
+
 1. 减少`inflate`时间，因为通过xml文件inflate，必然要经过文件的打开关闭，IO操作耗时，尤其当item的复用几率很低的情况下，随着type的增多，这种inflate带来的损耗是相当大的；
+
 2. 减少View对象的创建，事实上如果只是简单的减少inflate时间，采用系统常规方法new view，一个稍微复杂的item会包含大量的view....而事实上大量的view的new也会消耗大量时间，一个item里面有大量的view初始化耗时，然后又有多种type的item...依然会造成性能问题；
+
 3. 一定要减少过渡绘制和无意义的界面刷新，大量的item过渡绘制和无意义刷新都会造成卡顿；（invalidate）
+
 4. 无论是带有交互或者复杂布局，都应减少重复的onMeasure和onlayout，例如类似weight这些属性一定要少用，不要过多嵌套布局层次，避免relativeLayout相互嵌套等；（requestLayout），必要的时候自己去写对应的onMeasure，onlayout，ondraw
+
 5. 对系统TextView的优化，列表中的item就不应该出现系统的TextView，这货必然是最容易引起卡顿的，你可以自定义TextView，优化它的onmeasure等很多耗时的操作，具体根据场景而定，但一定要自己实现一个textView，不要用系统的，除非你自己实现不了或者有些场景满足不了；
+
 6. 利用android studio自带的性能工具分析定位性能问题，并持续优化；
 
 综上，**做到以上准则**之后，基本上大量的问题能被优化掉，而且已经能PK掉市面上**绝大部分APP**；
