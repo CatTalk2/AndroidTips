@@ -13,7 +13,7 @@ android 日常开发总结
 
 ### RecyclerView中多Type性能优化原则  
 
-1. 减少`inflate`时间，因为通过xml文件inflate，必然要经过文件的打开关闭，IO操作耗时，尤其当item的复用几率很低的情况下，随着type的增多，这种inflate带来的损耗是相当大的；
+1. 减少`inflate`时间，因为通过xml文件inflate，必然要经过文件的打开关闭，IO操作耗时，尤其当item的复用几率很低的情况下，随着type的增多，这种inflate带来的损耗是相当大的，不仅包括layout中xml，还包括drawable中的xml（getResource().getDrawable()）；
 
 2. 减少View对象的创建，事实上如果只是简单的减少inflate时间，采用系统常规方法new view，一个稍微复杂的item会包含大量的view....而事实上大量的view的new也会消耗大量时间，一个item里面有大量的view初始化耗时，然后又有多种type的item...依然会造成性能问题；
 
