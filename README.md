@@ -58,26 +58,26 @@ if (widthMode == MeasureSpec.EXACTLY) {
 对RecyclerView的性能优化主要集中在`onCreateViewHolder()`和`onBindViewHolder()`，即尽量减少相应的ViewHolder的创建和绑定时间，不要超过16ms，理论上就可以达到满帧，也就是不再卡顿；
 
 
-#### `onCreateViewHolder()`: 主要是优化`itemView`的创建和它的`onMeasure()`耗时，方案如下(优化前后效果排序)：
+#### 1.`onCreateViewHolder()`: 主要是优化`itemView`的创建和它的`onMeasure()`耗时，方案如下(优化前后效果排序)：
 
 1. 减少过渡绘制：
 一定一定一定要减少过渡绘制，优化掉一个list里面每个item都存在的过渡绘制，这是性能优化的第一步，一定要重视这个问题。
 
 2. 减少ixml文件`inflate`时间:
 一般情况下itemView都是我们通过xml文件inflate出来的，但是实践发现通过xml文件inflate非常耗时，因为xml的读取是耗时的IO操作，尤其当item的复用几率很低的情况下，随着type的增多，这种inflate带来的损耗是相当大的。所以如果itemType的确足够多，item复用几率很低的情况下，那就必须要优化掉xml的inflate耗时，这里的xml文件不仅包括layout中的xml。还包括`drawable中`的xml；
-- 具体做法就是将对应的xml布局转换成java代码，事实上就是去掉了系统层解析xml的过程，即：`new View()`的方式，如果对view比较熟悉的话，这部分也不是很难，只要搞清楚xml中每个节点的属性对应的api即可；
+  - 具体做法就是将对应的xml布局转换成java代码，事实上就是去掉了系统层解析xml的过程，即：`new View()`的方式，如果对view比较熟悉的话，这部分也不是很难，只要搞清楚xml中每个节点的属性对应的api即可；
 
 3. 减少View对象的创建:
 完成上一步的优化之后，相比于之前的性能已经提升了一大截。但如果你对itemView的设计不够合理，即使采用系统常规方法new view，一个稍微复杂的item会包含大量的view....而大量的view的创建也会消耗大量时间;
-- 正确设计你的itemView，对多ViewType能够共用的部分尽量设计成自定义View，减少view的构造和嵌套；
-- 采用**预加载**的方式，不要在一开始创建view的时候就将数据绑定可能要出现的View全部初始化，然后再gone掉，而是在bindViewHolder的时候根据所需去初始化；
-- 尽量`简化`你的itemView，一是为了提高复用几率，另外一个itemView过于复杂或者子view过多会导致view在布局或者重绘时更加耗时
+  - 正确设计你的itemView，对多ViewType能够共用的部分尽量设计成自定义View，减少view的构造和嵌套；
+  - 采用**预加载**的方式，不要在一开始创建view的时候就将数据绑定可能要出现的View全部初始化，然后再gone掉，而是在bindViewHolder的时候根据所需去初始化；
+  - 尽量`简化`你的itemView，一是为了提高复用几率，另外一个itemView过于复杂或者子view过多会导致view在布局或者重绘时更加耗时
 
 4. 减少`onMeasure()`耗时：
 多次`onMeasure()`也会导致性能问题，所以要尽量减少`RelativeLayout`的相互嵌套，少用`weight`等属性；必要的时候可以用自定义ViewGroup的方式实现；
 
 
-####  `onBinderViewHolder()`：这里主要是绑定数据， 需要注意要避免一些无意义的界面刷新（invalidate）或者requestLayout;
+####  2.`onBinderViewHolder()`：这里主要是绑定数据， 需要注意要避免一些无意义的界面刷新（invalidate）或者requestLayout;
 
 > 另外
 1. 对系统TextView的优化
